@@ -1,16 +1,31 @@
-FROM alpine:3.5
-MAINTAINER Daniel Guerra
-ADD /apk /apk
-RUN cp /apk/.abuild/-58b83ac3.rsa.pub /etc/apk/keys
-RUN apk --no-cache --update add /apk/x11vnc-0.9.13-r0.apk
-RUN apk --no-cache add xvfb openbox xfce4-terminal supervisor sudo \
-&& addgroup alpine \
-&& adduser  -G alpine -s /bin/sh -D alpine \
-&& echo "alpine:alpine" | /usr/sbin/chpasswd \
-&& echo "alpine    ALL=(ALL) ALL" >> /etc/sudoers \
-&& rm -rf /apk /tmp/* /var/cache/apk/*
-ADD etc /etc
-WORKDIR /home/alpine
+FROM debian
+
+LABEL maintainer "yuwash at yandex dot com"
+
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		x11vnc \
+		xvfb \
+		supervisor \
+		sudo \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& adduser --shell /bin/sh debian \
+	&& echo "debian:debian" | /usr/sbin/chpasswd \
+	&& echo "debian    ALL=(ALL) ALL" >> /etc/sudoers
+
+WORKDIR /home/debian
 EXPOSE 5900
-USER alpine
+USER debian
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
+
+USER root
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		openbox \
+		xfce4-terminal \
+	&& rm -rf /var/lib/apt/lists/*
+USER debian
+
+ADD etc /etc

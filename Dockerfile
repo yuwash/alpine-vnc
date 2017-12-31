@@ -24,7 +24,7 @@ RUN set -ex \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		openbox \
-		xfce4-terminal \
+		lxterminal \
 	&& rm -rf /var/lib/apt/lists/*
 USER debian
 

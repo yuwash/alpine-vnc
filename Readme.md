@@ -1,24 +1,19 @@
 # About
-x11vnc on alpine linux
+x11vnc on debian linux (fork of danielguerra/alpine-vnc)
 
 # Usage
 
-docker run -d -p 5900:5900 danielguerra/alpine-vnc
+```
+docker build . openbox-vnc
+docker run -d -p 5900:5900 openbox-vnc
+```
 
-After this use vnc-client to connect to your alpine.
-Right click shows the menu
+After this use vnc-client to connect to your x11vnc.
+Right click shows the openbox menu
 
-Everything runs as user alpine. This user has sudo rights.
+Everything runs as user debian. This user has sudo rights.
 
-The password=alpine you can change is with passwd in
-the xterm.
+The password=debian you can change it with passwd in
+the terminal.
 
-Default it runs alpine 3.5 (changed). 
-
-If you want to use alpine 3.4 run
-
-docker run -d -p 5900:5900 danielguerra/alpine-vnc:3.4
-
-For alpie edge use
-
-docker run -d -p 5900:5900 danielguerra/alpine-vnc:edge
+Default it runs debian latest (changed). 

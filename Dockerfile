@@ -1,16 +1,34 @@
 FROM alpine:3.5
-MAINTAINER Daniel Guerra
-ADD /apk /apk
-RUN cp /apk/.abuild/-58b83ac3.rsa.pub /etc/apk/keys
-RUN apk --no-cache --update add /apk/x11vnc-0.9.13-r0.apk
-RUN apk --no-cache add xvfb openbox xfce4-terminal supervisor sudo \
-&& addgroup alpine \
-&& adduser  -G alpine -s /bin/sh -D alpine \
-&& echo "alpine:alpine" | /usr/sbin/chpasswd \
-&& echo "alpine    ALL=(ALL) ALL" >> /etc/sudoers \
-&& rm -rf /apk /tmp/* /var/cache/apk/*
+
+LABEL maintainer "yuwash at yandex dot com"
+
+RUN set -ex \
+	&& echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories \
+	&& echo '@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories \
+	&& apk --update upgrade \
+	&& apk add --update --no-cache \
+		libressl2.5-libcrypto@edge \
+		libressl2.5-libssl@edge \
+		libvncserver@edge \
+		x11vnc@testing \
+		xvfb \
+		supervisor \
+		sudo \
+	&& rm -rf /apk /tmp/* /var/cache/apk/* \
+	&& addgroup alpine \
+	&& adduser  -G alpine -s /bin/sh -D alpine \
+	&& echo "alpine:alpine" | /usr/sbin/chpasswd \
+	&& echo "alpine    ALL=(ALL) ALL" >> /etc/sudoers
+
 ADD etc /etc
+
 WORKDIR /home/alpine
 EXPOSE 5900
 USER alpine
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
+
+RUN set -ex \
+	&& apk add --no-cache \
+		openbox \
+		st \
+		midori
